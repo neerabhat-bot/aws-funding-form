@@ -529,7 +529,22 @@
                 const request = store.getAll();
 
                 request.onerror = () => reject(request.error);
-                request.onsuccess = () => resolve(request.result || []);
+                request.onsuccess = async () => {
+                    let responses = request.result || [];
+                    const now = new Date();
+
+                    // Filter out expired submissions and delete them
+                    const activeResponses = [];
+                    for (const response of responses) {
+                        if (response.expiresAt && new Date(response.expiresAt) < now) {
+                            await deleteResponse(response.id);
+                        } else {
+                            activeResponses.push(response);
+                        }
+                    }
+
+                    resolve(activeResponses);
+                };
             });
         }
 

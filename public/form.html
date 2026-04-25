@@ -771,9 +771,13 @@
         async function saveToIndexedDB(data) {
             const db = await initIndexedDB();
             return new Promise((resolve, reject) => {
+                const now = new Date();
+                const expiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
+
                 const submission = {
                     id: Date.now().toString(),
-                    timestamp: new Date().toISOString(),
+                    timestamp: now.toISOString(),
+                    expiresAt: expiresAt.toISOString(),
                     ...data
                 };
 
